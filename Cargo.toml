@@ -4,11 +4,7 @@ version = "0.1.0"
 authors = ["Daniel Glinka <kaitsh@d-git.de>"]
 edition = "2018"
 
-[[bin]]
-name="tiny"
-path="main.rs"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tinyrenderer = { path = "tinyrenderer" }
+tgaimage = "0.1.1"

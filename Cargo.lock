@@ -9,13 +9,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "tiny"
 version = "0.1.0"
 dependencies = [
- "tinyrenderer 0.1.0",
-]
-
-[[package]]
-name = "tinyrenderer"
-version = "0.1.0"
-dependencies = [
  "tgaimage 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
