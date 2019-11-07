@@ -1,4 +1,5 @@
-use std::mem::swap;
+mod model;
+use model::Model;
 use tgaimage::{TGAColor, TGAColorRGB, TGAImage};
 
 static RED: TGAColor = TGAColor::Rgb(TGAColorRGB { r: 255, g: 0, b: 0 });
@@ -7,52 +8,50 @@ static WHITE: TGAColor = TGAColor::Rgb(TGAColorRGB {
     g: 255,
     b: 255,
 });
+static WIDTH: i32 = 500;
+static HEIGHT: i32 = 500;
 
 fn main() {
     let mut image = TGAImage::new(100, 100, 3);
-    line(13, 20, 80, 40, &mut image, &WHITE);
-    line(20, 13, 40, 80, &mut image, &RED);
-    line(80, 40, 13, 20, &mut image, &RED);
+    let model = Model::new("obj/african_head.obj").unwrap();
+
+    for i in 0..model.faces.len() {
+        let face = model.faces[i];
+        for j in 0..3 {
+            let v0 = model.verts[face[j as usize]];
+            let v1 = model.verts[face[(j + 1) % 3 as usize]];
+            let x0 = (v0.0 + 1.0) * WIDTH / 2.0;
+            let y0 = (v0.1 + 1.0) * HEIGHT / 2.0;
+            let x1 = (v0.0 + 1.0) * WIDTH / 2.0;
+            let y1 = (v0.1 + 1.0) * HEIGHT / 2.0;
+            line(x0, y0, x1, y1, &mut image, &WHITE);
+        }
+    }
     image.flip_vertically();
     image.write_tga_file("output.tga", false);
 }
 
-fn line(
-    mut x0: i32,
-    mut y0: i32,
-    mut x1: i32,
-    mut y1: i32,
-    image: &mut TGAImage,
-    color: &TGAColor,
-) {
-    let mut steep = false;
-    if (x0 - x1).abs() < (y0 - y1).abs() {
-        swap(&mut x0, &mut y0);
-        swap(&mut x1, &mut y1);
-        steep = true;
-    }
+fn line(mut x0: i32, mut y0: i32, x1: i32, y1: i32, image: &mut TGAImage, color: &TGAColor) {
+    let dx = (x1 - x0).abs();
+    let sx = if x0 < x1 { 1 } else { -1 };
+    let dy = -(y1 - y0).abs();
+    let sy = if y0 < y1 { 1 } else { -1 };
+    let mut err = dx + dy;
+    let mut err2; /* error value e_xy */
 
-    if x0 > x1 {
-        swap(&mut x0, &mut x1);
-        swap(&mut y0, &mut y1);
-    }
-    let dx = x1 - x0;
-    let dy = y1 - y0;
-    let derror = dy.abs() * 2;
-    let mut error = 0;
-    let mut x = x0 as usize;
-    let mut y = y0 as usize;
-    while x <= x1 as usize {
-        if steep {
-            image.set(y, x, color);
-        } else {
-            image.set(x, y, color);
+    loop {
+        image.set(x0 as usize, y0 as usize, color);
+        if x0 == x1 && y0 == y1 {
+            break;
         }
-        error += derror;
-        if error > dx {
-            y = if y1 > y0 { y + 1 } else { y - 1 };
-            error -= dx * 2;
-        }
-        x += 1;
+        err2 = 2 * err;
+        if err2 > dy {
+            err += dy;
+            x0 += sx;
+        } /* e_xy+e_x > 0 */
+        if err2 < dx {
+            err += dx;
+            y0 += sy;
+        } /* e_xy+e_y < 0 */
     }
 }
