@@ -8,7 +8,7 @@ pub struct Model {
 }
 
 impl Model {
-    pub fn new(path: &str) -> std::io::Result<Model> {
+    pub fn new(path: &String) -> std::io::Result<Model> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
         let mut verts: Vec<Vector<f32>> = Vec::new();

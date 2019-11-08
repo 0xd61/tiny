@@ -13,8 +13,9 @@ static WIDTH: usize = 500;
 static HEIGHT: usize = 500;
 
 fn main() {
+    let path = std::env::args().nth(1).expect("no path given");
     let mut image = TGAImage::new(WIDTH, HEIGHT, 3);
-    let model = Model::new("obj/african_head.obj").unwrap();
+    let model = Model::new(&path).unwrap();
     let width = WIDTH as f32;
     let height = HEIGHT as f32;
 
