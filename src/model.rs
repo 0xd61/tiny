@@ -58,15 +58,16 @@ impl<T> Vector<T> {
     }
 }
 
-impl<T> Index<usize> for Vector<T> {
+impl<T> Index<i32> for Vector<T> {
     type Output = T;
 
     #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
+    fn index(&self, index: i32) -> &Self::Output {
         match index {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
+            _ => panic!("Vector does not contain an element with index {}", index),
         }
     }
 }
